@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/vscode/devcontainers/dotnet:6.0-bullseye-slim
+FROM mcr.microsoft.com/vscode/devcontainers/dotnet:8.0-bookworm-slim
 
 ENV USER="vscode" \
     WORKDIR="/app"
