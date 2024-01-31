@@ -19,7 +19,8 @@
       "extensions": [
         "Ionide.Ionide-fsharp",
         "ms-dotnettools.csharp",
-        "Ionide.Ionide-Paket"
+        "Ionide.Ionide-Paket",
+        "ms-azuretools.vscode-docker"
       ]
     }
   },
