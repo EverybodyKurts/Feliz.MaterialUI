@@ -8,3 +8,6 @@ COPY --chown=${USER}:${USER} . ${WORKDIR}
 USER ${USER}
 
 WORKDIR ${WORKDIR}
+
+RUN dotnet tool restore \
+    && dotnet paket restore
