@@ -2,22 +2,22 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "paket": {
-      "version": "5.257.0",
+    "fake-cli": {
+      "version": "6.0.0",
       "commands": [
-        "paket"
+        "fake"
       ]
     },
     "femto": {
-      "version": "0.9.0",
+      "version": "0.19.0",
       "commands": [
         "femto"
       ]
     },
-    "fake-cli": {
-      "version": "5.20.3",
+    "paket": {
+      "version": "8.0.3",
       "commands": [
-        "fake"
+        "paket"
       ]
     }
   }
