@@ -19,6 +19,12 @@
       "commands": [
         "paket"
       ]
+    },
+    "fable": {
+      "version": "4.11.0",
+      "commands": [
+        "fable"
+      ]
     }
   }
 }
