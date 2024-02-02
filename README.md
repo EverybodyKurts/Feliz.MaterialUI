@@ -1,14 +1,23 @@
 # Feliz.MaterialUI
 
-[Feliz](https://github.com/Zaid-Ajaj/Feliz)-style Fable bindings for [Material-UI](https://material-ui.com/).
+Hopefully, the new home for [Feliz](https://github.com/Zaid-Ajaj/Feliz)-style Fable bindings for [Material-UI](https://material-ui.com/).
 
-Documentation
---------------
 
-https://shmew.github.io/Feliz.MaterialUI/
+## Goals
 
-Contributing
-------------
+### 1. Create a Github codespace
+
+Make it as easy as possible for developers to collaborate and contribute to the project. The dependencies and the most commonly used tools are already installed. The project can be readily build and packaged. Of course. This entails dockerizing the project, most likely using a devcontainer as the base image.
+
+### 2. Publish documentation to github pages via github actions
+
+Automating publication hopefully means that the project can be readily built and up to date. In fact, automating as much as possible to lighten maintenance for regular contributors is an overall goal.
+
+### 3. Build project via `npm` scripts
+
+Currently, `fake` is holding the project back from being upgraded (it requires `net6` and they no plans to update that dependency). It's time to take it out and substitute it with a more lightweight process.
+
+## Contributing
 
 This project uses `fake`, `paket`, and `femto` as .NET Core 3 local tools. Therefore, run `dotnet tool restore` to restore the necessary CLI tools before doing anything else.
 
