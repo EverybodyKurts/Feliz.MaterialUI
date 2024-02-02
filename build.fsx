@@ -1,4 +1,9 @@
-#r "paket: groupref FakeBuild //"
+#r "nuget: Fake.Core.Target"
+#r "nuget: Fake.DotNet.Cli"
+#r "nuget: Fake.DotNet.Paket"
+#r "nuget: Fake.JavaScript.Npm"
+#r "nuget: System.Text.Json"
+
 #load ".fake/build.fsx/intellisense.fsx"
 
 #if !FAKE
