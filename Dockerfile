@@ -16,5 +16,6 @@ USER ${USER}
 
 WORKDIR ${WORKDIR}
 
-RUN dotnet tool restore \
-    && dotnet paket restore
+RUN yarn &&\
+    dotnet tool restore && \
+    dotnet paket restore
