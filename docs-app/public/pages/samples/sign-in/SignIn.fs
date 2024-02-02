@@ -5,7 +5,7 @@ open System.Text.RegularExpressions
 open Elmish
 open Fable.MaterialUI.Icons
 open Feliz
-open Feliz.ElmishComponents
+open Feliz.UseElmish
 open Feliz.MaterialUI
 
 
@@ -62,7 +62,7 @@ let init =
     Password = ""
     ValidatePassword = false
     RememberMe = false
-    IsBusy = false }
+    IsBusy = false }, Cmd.none
 
 
 let update msg m =
@@ -75,12 +75,13 @@ let update msg m =
   | SubmitInvalid -> { m with ValidateEmailAddress = true; ValidatePassword = true }, Cmd.none
   | SubmitValid _ when m.IsBusy -> m, Cmd.none
   | SubmitValid data ->
-      let signIn =
+      let signIn () =
         async {
           do! Async.Sleep 1000
-          return SignInCompleted
+          return ()
         }
-      { m with IsBusy = true }, Cmd.OfAsync.result signIn
+      let cmd = Cmd.OfAsync.perform signIn  () (fun _ -> SignInCompleted)
+      { m with IsBusy = true }, cmd
   | SignInCompleted -> { m with IsBusy = false }, Cmd.none
 
 
@@ -109,8 +110,10 @@ let useStyles = Styles.makeStyles(fun styles theme ->
   |}
 )
 
-let app = React.functionComponent(fun (model, dispatch) ->
+[<ReactComponent>]
+let SignIn () =
   let classes = useStyles ()
+  let model, dispatch = React.useElmish(init, update, [| |])
   Mui.container [
     container.component' "main"
     container.maxWidth.xs
@@ -126,9 +129,9 @@ let app = React.functionComponent(fun (model, dispatch) ->
           else
             Mui.avatar [
               avatar.classes.root classes.avatar
-              avatar.children [
-                lockOutlinedIcon []
-              ]
+              // avatar.children [
+                // lockOutlinedIcon []
+              // ]
             ]
 
           Mui.typography [
@@ -239,12 +242,11 @@ let app = React.functionComponent(fun (model, dispatch) ->
       ]
     ]
   ]
-)
 
+// open Browser.Dom
 
-let render model dispatch =
-  app (model, dispatch)
+// let htmlElement= document.getElementById "feliz-app"
+// let root = ReactDOM.createRoot htmlElement
 
-
-let getSample (key: string) =
-  React.elmishComponent("SignIn", init, update, render, key)
+// let getSample (_: string) =
+//   root.render (SignIn())

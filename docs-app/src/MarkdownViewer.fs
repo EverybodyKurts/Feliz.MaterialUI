@@ -6,7 +6,7 @@ open Fable.MaterialUI.Icons
 open Fable.MaterialUI.MaterialDesignIcons
 open Fable.SimpleHttp
 open Feliz
-open Feliz.ElmishComponents
+open Feliz.UseElmish
 open Feliz.Markdown
 open Feliz.MaterialUI
 open SampleViewer
@@ -30,9 +30,11 @@ type Msg =
   | LoadCompleted of Result<Path * MarkdownContent, ErrorMessage>
 
 
-let init path =
-  Initial, Cmd.ofMsg (StartLoad path)
+// let init path =
+//   Initial, Cmd.ofMsg (StartLoad path)
 
+let init =
+  Initial, Cmd.ofMsg (StartLoad [])
 
 let update (msg: Msg) (state: State) =
   match msg with
@@ -53,8 +55,9 @@ let update (msg: Msg) (state: State) =
       Loaded res, Cmd.none
 
 
-
-let render (state: State) dispatch =
+[<ReactComponent>]
+let MarkdownViewer() =
+  let state, dispatch = React.useElmish(init, update, [| |])
   match state with
   | Initial ->
       Html.none
@@ -90,36 +93,36 @@ let render (state: State) dispatch =
               prop.style [
                 style.floatStyle.right
               ]
-              prop.href (sprintf "https://github.com/Shmew/Feliz.MaterialUI/edit/master/docs-app/public/%s" (String.concat "/" path))
+              prop.href (sprintf "https://github.com/everybodykurts/Feliz.MaterialUI/edit/main/docs-app/public/%s" (String.concat "/" path))
               iconButton.component' "a"
-              iconButton.children (pencilIcon [])
+              // iconButton.children [pencilIcon [] ]
             ]
           )
         ]
         Markdown.markdown [
-          markdown.source content
+          markdown.children content
           markdown.escapeHtml false
-          markdown.renderers [
-            markdown.renderers.paragraph (fun props ->
+          markdown.components [
+            markdown.components.p (fun props ->
               Mui.typography [
                 typography.paragraph true
                 typography.children props.children
               ]
             )
-            markdown.renderers.link (fun props ->
+            markdown.components.linkReference (fun props ->
               Mui.link [
                 prop.href props.href
                 link.children props.children
               ]
             )
-            markdown.renderers.code (fun props ->
-              if props.language = "sample" then
-                let path = path.[0..path.Length - 2] @ [props.value]
+            markdown.components.code (fun props ->
+              if props.className = "sample" then
+                let path = path[0..path.Length - 2] @ [props.value]
                 sampleViewer path
               else
                 CommonViews.code (props.language, props.value)
             )
-            markdown.renderers.heading (fun props ->
+            markdown.components.ol (fun props ->
               Mui.typography [
                 match props.level with
                 | 1 -> typography.variant.h1
@@ -143,11 +146,10 @@ let render (state: State) dispatch =
         typography.children errorMsg
       ]
 
-let markdownViewer =
-  React.memo(
-    areEqual = equalsButFunctions,
-    render = (
-      fun (props: {| path: _ |}) ->
-        React.elmishComponent("MarkdownLoader", init props.path, update, render)
-    )
-  )
+open Browser.Dom
+
+let htmlElement= document.getElementById "feliz-app"
+let root = ReactDOM.createRoot htmlElement
+
+let getSample (_: string) =
+  root.render (MarkdownViewer())
