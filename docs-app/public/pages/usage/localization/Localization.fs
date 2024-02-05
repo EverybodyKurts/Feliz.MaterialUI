@@ -8,7 +8,7 @@ open Feliz.MaterialUI
 type private Props = { key: string }
 
 [<ReactComponent>]
-let Localization () =
+let Localization (_: string) : ReactElement =
   Mui.themeProvider [
     // createMuiTheme as used below extends the existing theme, which is necessary due to
     // this documentation's styling solution; there is also a createMuiTheme overload

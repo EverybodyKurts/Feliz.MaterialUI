@@ -56,7 +56,7 @@ type Msg =
   | SignInCompleted
 
 
-let init =
+let init : Model * Cmd<Msg> =
   { EmailAddress = ""
     ValidateEmailAddress = false
     Password = ""
@@ -65,7 +65,7 @@ let init =
     IsBusy = false }, Cmd.none
 
 
-let update msg m =
+let update (msg: Msg) (m: Model) : Model * Cmd<Msg> =
   match msg with
   | SetEmailAddress s -> { m with EmailAddress = s }, Cmd.none
   | EnableValidateEmailAddress -> { m with ValidateEmailAddress = true }, Cmd.none
@@ -111,7 +111,7 @@ let useStyles = Styles.makeStyles(fun styles theme ->
 )
 
 [<ReactComponent>]
-let SignIn () =
+let SignIn (_: string) : ReactElement =
   let classes = useStyles ()
   let model, dispatch = React.useElmish(init, update, [| |])
   Mui.container [
@@ -242,11 +242,3 @@ let SignIn () =
       ]
     ]
   ]
-
-// open Browser.Dom
-
-// let htmlElement= document.getElementById "feliz-app"
-// let root = ReactDOM.createRoot htmlElement
-
-// let getSample (_: string) =
-//   root.render (SignIn())

@@ -1,5 +1,6 @@
 module App
 
+open Elmish
 open Fable.Core.JsInterop
 open Fable.React
 open Fable.MaterialUI.Icons
@@ -7,11 +8,13 @@ open Fable.MaterialUI.MaterialDesignIcons
 open Feliz
 open Feliz.MaterialUI
 open Feliz.Router
-open MarkdonViewer
+open Feliz.UseElmish
+open MarkdownViewer
 
 
 [<RequireQualifiedAccess>]
 module Url =
+  let [<Literal>] githubRepo =  "https://github.com/EverybodyKurts/Feliz.MaterialUI"
 
   let [<Literal>] pages = "pages"
   let [<Literal>] usage = "usage"
@@ -46,16 +49,17 @@ type Msg =
   | ToggleCustomThemeMode
 
 
-let init () = {
-  CurrentPath = Router.currentUrl ()
-  CustomThemeMode = None
-}
+let init () : Model * Cmd<Msg> = 
+  {
+    CurrentPath = Router.currentUrl ()
+    CustomThemeMode = None
+  }, Cmd.none
 
 
-let update (msg: Msg) (m: Model) =
+let update (msg: Msg) (m: Model) : Model * Cmd<Msg> =
   match msg with
   | SetPath segments ->
-      { m with CurrentPath = segments }
+      { m with CurrentPath = segments }, Cmd.none
   | ToggleCustomThemeMode ->
       { m with
           CustomThemeMode =
@@ -63,7 +67,7 @@ let update (msg: Msg) (m: Model) =
             | None -> Some Dark
             | Some Dark -> Some Light
             | Some Light -> None
-      }
+      }, Cmd.none
 
 
 let private useStyles = Styles.makeStyles(fun styles theme ->
@@ -139,7 +143,7 @@ module Theme =
   ])
 
 
-let toolbar model dispatch =
+let toolbar (model: Model) (dispatch: Msg -> unit) : ReactElement =
   let c = useStyles ()
   Mui.toolbar [
     Mui.typography [
@@ -161,12 +165,12 @@ let toolbar model dispatch =
         Mui.iconButton [
           prop.onClick (fun _ -> dispatch ToggleCustomThemeMode)
           iconButton.color.inherit'
-          iconButton.children [
-            match model.CustomThemeMode with
-            | None -> brightnessAutoIcon []
-            | Some Light -> brightness7Icon []
-            | Some Dark -> brightness4Icon []
-          ]
+          // iconButton.children [
+          //   match model.CustomThemeMode with
+          //   | None -> brightnessAutoIcon []
+          //   | Some Light -> brightness7Icon []
+          //   | Some Dark -> brightness4Icon []
+          // ]
         ]
       )
     ]
@@ -176,17 +180,16 @@ let toolbar model dispatch =
       tooltip.title "Feliz.MaterialUI on GitHub"
       tooltip.children(
         Mui.iconButton [
-          prop.href "https://github.com/Shmew/Feliz.MaterialUI"
+          prop.href Url.githubRepo
           iconButton.component' "a"
           iconButton.color.inherit'
-          iconButton.children (gitHubIcon [])
+          // iconButton.children (gitHubIcon [])
         ]
       )
     ]
   ]
 
-
-let menuContainer = React.functionComponent(fun (name: string, pathPrefix: string, currentPath: string list, children: seq<ReactElement>) ->
+let menuContainer (name: string, pathPrefix: string, currentPath: string list, children: seq<ReactElement>) : ReactElement =
   let isInPath =
     match currentPath with
     | hd::_ when hd = pathPrefix -> true
@@ -210,10 +213,8 @@ let menuContainer = React.functionComponent(fun (name: string, pathPrefix: strin
       ]
     ]
   ]
-)
 
-
-let drawer model dispatch =
+let drawer (model: Model) (_: Msg -> unit) : ReactElement =
   let c = useStyles ()
 
   let menuItem isNested (name: string) path =
@@ -263,10 +264,14 @@ let drawer model dispatch =
   ]
 
 
-let App = FunctionComponent.Of((fun (model, dispatch) ->
+[<ReactComponent>]
+let App () : ReactElement =
   let isDarkMode = Hooks.useMediaQuery "@media (prefers-color-scheme: dark)"
   let systemThemeMode = if isDarkMode then Dark else Light
   let c = useStyles ()
+
+  let model, dispatch = React.useElmish(init, update, [| |])
+
   React.router [
     router.onUrlChanged (SetPath >> dispatch)
     router.children [
@@ -294,7 +299,7 @@ let App = FunctionComponent.Of((fun (model, dispatch) ->
                 prop.className c.content
                 prop.children [
                   Html.div [ prop.className c.toolbar ]
-                  markdownViewer {| path = (Url.pages :: model.CurrentPath @ [Url.indexMd]) |}
+                  MarkdownViewer (Url.pages :: model.CurrentPath @ [Url.indexMd])
                 ]
               ]
             ]
@@ -303,7 +308,3 @@ let App = FunctionComponent.Of((fun (model, dispatch) ->
       ]
     ]
   ]
-), "App", memoEqualsButFunctions)
-
-let view model dispatch =
-  App (model, dispatch)

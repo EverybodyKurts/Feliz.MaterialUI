@@ -32,19 +32,19 @@ type StatusCode = int
 type State =
   | Initial
   | Loading
-  | Loaded of Result<(unit -> Sample) * CodeBlock * Path, ErrorMessage>
+  | Loaded of Result<(string -> Sample) * CodeBlock * Path, ErrorMessage>
 
 
 type Msg =
   | StartLoad of path: Path
-  | LoadCompleted of Result<(unit -> Sample) * CodeBlock * Path, ErrorMessage>
+  | LoadCompleted of Result<(string -> Sample) * CodeBlock * Path, ErrorMessage>
 
 
-let init =
+let init (path: string list) : State * Cmd<Msg> =
   Initial, Cmd.ofMsg (StartLoad [])
 
 
-let update (msg: Msg) (state: State) =
+let update (msg: Msg) (state: State) : State * Cmd<Msg> =
   match msg with
   | StartLoad path ->
       let url = path |> String.concat "/"
@@ -75,7 +75,7 @@ let update (msg: Msg) (state: State) =
 
 
 type DemoProps = {
-  GetSample: unit -> Sample
+  GetSample: string -> Sample
   MarkdownCodeBlock: string
   Path: string list
 }
@@ -101,7 +101,7 @@ let useDemoStyles = Styles.makeStyles(fun styles theme ->
   |}
 )
 
-let Demo = React.functionComponent(fun (props: DemoProps) ->
+let Demo (props: DemoProps) : ReactElement =
   let c = useDemoStyles ()
   let isExpanded, setIsExpanded = React.useState false
   let sampleKey, setSampleKey = React.useState 0
@@ -175,8 +175,9 @@ let Demo = React.functionComponent(fun (props: DemoProps) ->
           markdown.children props.MarkdownCodeBlock
           markdown.escapeHtml false
           markdown.components [
-            markdown.components.code (fun props ->
-              CommonViews.code (props.language, props.value)
+            markdown.components.code (fun (props: ICodeProperties) ->
+              // CommonViews.code (props.language, props.children)
+              CommonViews.code ("f#", props.children)
             )
           ]
         ]
@@ -205,12 +206,11 @@ let Demo = React.functionComponent(fun (props: DemoProps) ->
     //]
 
   ]
-)
 
 
 [<ReactComponent>]
-let SampleLoader () =
-  let state , dispatch = React.useElmish(init, update, [| |])
+let SampleViewer (path: string list) : ReactElement =
+  let state, dispatch = React.useElmish(init path, update, [| box path |])
   match state with
   | Initial ->
       Html.none

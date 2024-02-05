@@ -1,4 +1,4 @@
-﻿module MarkdonViewer
+﻿module MarkdownViewer
 
 open Elmish
 open Fable.React
@@ -33,10 +33,10 @@ type Msg =
 // let init path =
 //   Initial, Cmd.ofMsg (StartLoad path)
 
-let init =
+let init : State * Cmd<Msg> =
   Initial, Cmd.ofMsg (StartLoad [])
 
-let update (msg: Msg) (state: State) =
+let update (msg: Msg) (state: State) : State * Cmd<Msg> =
   match msg with
   | StartLoad path ->
       let url = path |> String.concat "/"
@@ -56,8 +56,8 @@ let update (msg: Msg) (state: State) =
 
 
 [<ReactComponent>]
-let MarkdownViewer() =
-  let state, dispatch = React.useElmish(init, update, [| |])
+let MarkdownViewer (path: string list) : ReactElement =
+  let state, dispatch = React.useElmish(init, update, [| box path |])
   match state with
   | Initial ->
       Html.none
@@ -117,14 +117,16 @@ let MarkdownViewer() =
             )
             markdown.components.code (fun props ->
               if props.className = "sample" then
-                let path = path[0..path.Length - 2] @ [props.value]
-                sampleViewer path
+                // let path = path[0..path.Length - 2] @ [props.value]
+                let path = path[0..path.Length - 2]
+                SampleViewer path
               else
-                CommonViews.code (props.language, props.value)
+                CommonViews.code ("f#", props.children)
             )
             markdown.components.ol (fun props ->
               Mui.typography [
-                match props.level with
+                // match props.level with
+                match 1 with
                 | 1 -> typography.variant.h1
                 | 2 -> typography.variant.h2
                 | 3 -> typography.variant.h3
@@ -145,11 +147,3 @@ let MarkdownViewer() =
         typography.paragraph true
         typography.children errorMsg
       ]
-
-open Browser.Dom
-
-let htmlElement= document.getElementById "feliz-app"
-let root = ReactDOM.createRoot htmlElement
-
-let getSample (_: string) =
-  root.render (MarkdownViewer())

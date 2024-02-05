@@ -1,9 +1,10 @@
 ﻿module Samples.Components.Autocomplete.Autocomplete
 
 open System
+
+open Elmish
 open Feliz
 open Feliz.UseElmish
-open Elmish
 open Feliz.MaterialUI
 
 
@@ -24,7 +25,7 @@ type Msg =
   | Select of Guid option
 
 
-let init () =
+let init () : Model * Cmd<Msg> =
   { Countries =
       ["Afghanistan"; "Aland Islands"; "Albania"; "Algeria"; "American Samoa"; "Andorra"; "Angola"; "Anguilla"; "Antarctica"; "Antigua and Barbuda"; "Argentina"; "Armenia"; "Aruba"; "Australia"; "Austria"; "Azerbaijan"]
       |> List.map (fun s ->
@@ -34,14 +35,14 @@ let init () =
     LastSelected = None }, Cmd.none
 
 
-let update msg m =
+let update (msg: Msg) (m: Model) : Model * Cmd<Msg> =
   match msg with
   | SetText s -> { m with MyText = s }, Cmd.none
   | Select id -> { m with LastSelected = id }, Cmd.none
 
 
 [<ReactComponent>]
-let Autocomplete () =
+let Autocomplete (_: string) : ReactElement =
   let model, dispatch = React.useElmish(init, update, [| |])
   Html.div [
     Mui.autocomplete [
@@ -77,12 +78,3 @@ let Autocomplete () =
       )
     ]
   ]
-
-
-// open Browser.Dom
-
-// let htmlElement= document.getElementById "feliz-app"
-// let root = ReactDOM.createRoot htmlElement
-
-// let getSample (_: string) =
-//   root.render (Autocomplete())
