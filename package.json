@@ -5,22 +5,30 @@
   "repository": "https://github.com/EverybodyKurts/Feliz.MaterialUI.git",
   "license": "MIT",
   "scripts": {
-    "start": "dotnet tool restore && dotnet fable watch src --runFast vite",
     "build": "dotnet tool restore && dotnet fable ./src/Feliz.MaterialUI --run vite build",
+    "build2": "dotnet tool restore && dotnet fable ./docs-app/src --run vite build",
+    "start": "dotnet tool restore && dotnet fable watch ./docs-app/src --runFast vite",
     "clean": "dotnet fable clean src --yes",
     "compile-split": "fable-splitter . -o ./dist"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.2.1",
+    "fable-compiler": "^2.13.0",
     "fable-splitter": "^2.2.1",
     "vite": "^5.0.12"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.9",
     "@mui/lab": "^5.0.0-alpha.164",
     "@mui/material": "^5.15.7",
+    "@types/react": "^18.2.55",
+    "gh-pages": "^6.1.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-highlight": "^0.15.0",
+    "react-markdown": "^9.0.1",
+    "remotedev": "^0.2.9"
   }
 }
